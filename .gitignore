@@ -1,0 +1,14 @@
+
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+
+.DS_Store
+Thumbs.db
+
+# Arquivos pesados locais, subir o Parquet final 
+data/raw/*.json
+!data/raw/metadata_extracao.json
