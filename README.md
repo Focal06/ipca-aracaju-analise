@@ -7,7 +7,7 @@ Projeto desenvolvido para a disciplina de Economia e Finanças (Prof. Sérgio Sa
 - Leandro Ribeiro de Siqueira Maciel Neto
 
 ## Pergunta de Pesquisa
-Quais grupos do IPCA explicam a diferença entre a inflação de Aracaju e a média nacional desde 2014?
+    Quais grupos do IPCA explicam a diferença entre a inflação de Aracaju e a média nacional desde 2014?
 
 ## Estrutura do Projeto
 - `src/extract.py`: Extração automatizada via API SIDRA (IBGE) das Tabelas 1419 (2014–2019) e 7060 (2020–atual) com registro de metadados (`data/raw/metadata_extracao.json`).
@@ -22,3 +22,13 @@ Quais grupos do IPCA explicam a diferença entre a inflação de Aracaju e a mé
    ```bash
    git clone [https://github.com/SEU-USUARIO/ipca-aracaju-analise.git](https://github.com/SEU-USUARIO/ipca-aracaju-analise.git)
    cd ipca-aracaju-analise
+
+2. Crie e ative o ambiente virtual e instale as dependências:
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    pip install -r requirements.txt
+
+3. Execute as etapas do pipeline na ordem:
+    python src/extract.py
+    python src/transform.py
+    python src/validate.py
