@@ -7,8 +7,17 @@ OUT_DIR = Path("reports/analise")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 COD_INDICE_GERAL = "7169"
-COD_ALIMENTACAO = "7170"
-COD_TRANSPORTES = "7712"
+GRUPOS_9 = [
+    "7170",
+    "7445",
+    "7486",
+    "7558",
+    "7625",
+    "7660",
+    "7712",
+    "7766",
+    "7786",
+]
 
 
 def _inflacao_acumulada_pct(serie_var_mensal: pd.Series) -> float:
@@ -26,9 +35,12 @@ def rodar_analise():
 
     df = pd.read_parquet(PARQUET_PATH)
     df["data_ref"] = pd.to_datetime(df["data_ref"])
+    df["grupo_codigo"] = df["grupo_codigo"].astype(str).str.strip()
 
-    # Contribuição mensal aproximada de cada categoria/grupo em pontos percentuais (p.p.)
-    df["contrib_mensal_pp"] = (df["peso_mensal"] * df["var_mensal"]) / 100.0
+    # Contribuição mensal aproximada de cada grupo em pontos percentuais (p.p.)
+    df["contrib_mensal_pp"] = (
+        df["peso_mensal"].fillna(0.0) * df["var_mensal"].fillna(0.0)
+    ) / 100.0
 
     # 1. Inflação acumulada total e por regime POF (Tabela 1419 vs Tabela 7060) para o Índice Geral
     df_geral = df[df["grupo_codigo"] == COD_INDICE_GERAL].copy()
@@ -62,12 +74,12 @@ def rodar_analise():
     ).round(2)
     df_resumo_loc = df_resumo_loc.sort_values("acum_total_pct", ascending=False)
 
-    # 2. Decomposição da soma das contribuições mensais por grupo (exclui Índice Geral)
-    df_grupos = df[df["grupo_codigo"] != COD_INDICE_GERAL].copy()
+    # 2. Decomposição da soma das contribuições mensais para os 9 grupos oficiais
+    df_grupos = df[df["grupo_codigo"].isin(GRUPOS_9)].copy()
 
     contrib_por_grupo = (
         df_grupos.groupby(
-            ["localidade", "grupo_codigo", "grupo"], as_index=False
+            ["localidade", "grupo_codigo", "grupo"], as_index=False, dropna=False
         )
         .agg(
             soma_contrib_pp=("contrib_mensal_pp", "sum"),
@@ -85,12 +97,13 @@ def rodar_analise():
         "var_mensal_media_pct"
     ].round(3)
 
-    # Comparativo direto Aracaju vs Brasil por grupo
-    aju_grp = contrib_por_grupo[contrib_por_grupo["localidade"] == "Aracaju"].set_index(
-        "grupo"
+    aju_grp = (
+        contrib_por_grupo[contrib_por_grupo["localidade"] == "Aracaju"]
+        .set_index(["grupo_codigo", "grupo"])
     )
-    br_grp = contrib_por_grupo[contrib_por_grupo["localidade"] == "Brasil"].set_index(
-        "grupo"
+    br_grp = (
+        contrib_por_grupo[contrib_por_grupo["localidade"] == "Brasil"]
+        .set_index(["grupo_codigo", "grupo"])
     )
 
     comp_aju_br = pd.DataFrame(
@@ -111,27 +124,29 @@ def rodar_analise():
         "diff_contrib_pp", key=abs, ascending=False
     )
 
-    # 3. Decomposição separada por regime POF (Tabela 1419 vs Tabela 7060) para Aracaju vs Brasil
+    # 3. Decomposição por regime POF (Tabela 1419 vs Tabela 7060)
     contrib_regime = (
         df_grupos[df_grupos["localidade"].isin(["Aracaju", "Brasil"])]
-        .groupby(["tabela_sidra", "localidade", "grupo"], as_index=False)[
-            "contrib_mensal_pp"
-        ]
+        .groupby(
+            ["tabela_sidra", "localidade", "grupo_codigo", "grupo"],
+            as_index=False,
+            dropna=False,
+        )["contrib_mensal_pp"]
         .sum()
     )
     contrib_regime["contrib_mensal_pp"] = contrib_regime[
         "contrib_mensal_pp"
     ].round(2)
-    pivot_regime = contrib_regime.pivot(
-        index=["tabela_sidra", "grupo"],
+    pivot_regime = contrib_regime.pivot_table(
+        index=["tabela_sidra", "grupo_codigo", "grupo"],
         columns="localidade",
         values="contrib_mensal_pp",
+        aggfunc="first",
     ).reset_index()
     pivot_regime["diff_aju_menos_br_pp"] = (
         pivot_regime["Aracaju"] - pivot_regime["Brasil"]
     ).round(2)
 
-    # Salva saídas em CSV para facilitar visualização, notebook ou painel
     df_resumo_loc.to_csv(OUT_DIR / "resumo_inflacao_localidades.csv", index=False)
     comp_aju_br.to_csv(OUT_DIR / "decomposicao_aracaju_vs_brasil.csv", index=False)
     pivot_regime.to_csv(
@@ -140,7 +155,7 @@ def rodar_analise():
 
     print("=== RESUMO INFLACAO ACUMULADA (DESDE JAN/2014) ===")
     print(df_resumo_loc.to_string(index=False))
-    print("\n=== MAIORES DIFERENCAS DE CONTRIBUICAO: ARACAJU VS BRASIL ===")
+    print("\n=== DECOMPOSICAO COMPLETA (9 GRUPOS): ARACAJU VS BRASIL ===")
     print(comp_aju_br.to_string(index=False))
     print(f"\nArquivos salvos em: {OUT_DIR}")
 

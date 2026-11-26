@@ -1,19 +1,19 @@
-tabela_sidra,grupo,Aracaju,Brasil,diff_aju_menos_br_pp
-1419,1.Alimentação e bebidas,2.48,8.94,-6.46
-1419,2.Habitação,0.7,6.54,-5.84
-1419,3.Artigos de residência,-0.03,0.69,-0.72
-1419,4.Vestuário,0.17,0.95,-0.78
-1419,5.Transportes,1.43,5.38,-3.95
-1419,6.Saúde e cuidados pessoais,0.71,4.8,-4.09
-1419,7.Despesas pessoais,0.57,3.95,-3.38
-1419,8.Educação,0.59,2.0,-1.41
-1419,9.Comunicação,0.05,0.16,-0.11
-7060,1.Alimentação e bebidas,10.39,10.23,0.16
-7060,2.Habitação,3.84,5.58,-1.74
-7060,3.Artigos de residência,0.81,1.12,-0.31
-7060,4.Vestuário,1.85,1.72,0.13
-7060,5.Transportes,7.09,7.16,-0.07
-7060,6.Saúde e cuidados pessoais,6.57,5.07,1.5
-7060,7.Despesas pessoais,2.97,3.4,-0.43
-7060,8.Educação,3.15,2.22,0.93
-7060,9.Comunicação,0.65,0.69,-0.04
+tabela_sidra,grupo_codigo,grupo,Aracaju,Brasil,diff_aju_menos_br_pp
+1419,7170,1.Alimentação e bebidas,2.48,8.94,-6.46
+1419,7445,2.Habitação,0.7,6.54,-5.84
+1419,7486,3.Artigos de residência,-0.03,0.69,-0.72
+1419,7558,4.Vestuário,0.17,0.95,-0.78
+1419,7625,5.Transportes,1.43,5.38,-3.95
+1419,7660,6.Saúde e cuidados pessoais,0.71,4.8,-4.09
+1419,7712,7.Despesas pessoais,0.57,3.95,-3.38
+1419,7766,8.Educação,0.59,2.0,-1.41
+1419,7786,9.Comunicação,0.05,0.16,-0.11
+7060,7170,1.Alimentação e bebidas,10.39,10.23,0.16
+7060,7445,2.Habitação,3.84,5.58,-1.74
+7060,7486,3.Artigos de residência,0.81,1.12,-0.31
+7060,7558,4.Vestuário,1.85,1.72,0.13
+7060,7625,5.Transportes,7.09,7.16,-0.07
+7060,7660,6.Saúde e cuidados pessoais,6.57,5.07,1.5
+7060,7712,7.Despesas pessoais,2.97,3.4,-0.43
+7060,7766,8.Educação,3.15,2.22,0.93
+7060,7786,9.Comunicação,0.65,0.69,-0.04
